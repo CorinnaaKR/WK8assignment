@@ -1,0 +1,186 @@
+//DATA FETCHING DEMO CODE - DYNAMIC PAGE
+//TODO: I want to render a specific user's data
+
+export default async function UserIdPage({ params }) {
+  const userId = await params.userId;
+  //we can use the value of params in our fetch to specifically get one user
+  const response = await fetch(`https://dummyjson.com/users/${userId}`);
+  const data = await response.json();
+
+  return (
+    <>
+      <h1>One user: {userId}</h1>
+      <ul>
+        <li>{data.firstName}</li>
+        <li>{data.lastName}</li>
+        <li>{data.email}</li>
+        <li>{data.university}</li>
+      </ul>
+    </>
+  );
+}
+
+//DEMO CODE FROM STATIC PAGE
+//we can destructure searchParams in our route
+export default async function UsersPage({ searchParams }) {
+  const response = await fetch("https://dummyjson.com/users");
+  const data = await response.json();
+  const wrangledData = data.users;
+
+  //searchParams is async
+  const query = await searchParams;
+
+  //logic to sort data in alphabetical order
+  //if statement --> when query is "asc", change the order to alphabetical // when query is "desc", change the order to reverse alphabetical
+
+  if (query.sort === "asc") {
+    wrangledData.sort((a, b) => {
+      return a.firstName.localeCompare(b.firstName);
+    });
+  } else if (query.sort === "desc") {
+    wrangledData.sort((a, b) => {
+      return b.firstName.localeCompare(a.firstName);
+    });
+  }
+
+  return (
+    <>
+      <h1>A list of users: </h1>
+      <Link href={"/users?sort=asc"}>Sort alphabetical</Link>
+      <Link href={"/users?sort=desc"}>Sort reverse alphabetical</Link>
+
+      {wrangledData.map((user) => {
+        return (
+          <h1 key={user.id}>
+            {user.firstName} {user.lastName}
+          </h1>
+        );
+      })}
+    </>
+  );
+}
+
+//DEMO FOR POSTGRESSQL
+
+//DYNAMIC PAGE 
+//TODO: render dynamically each rollercoaster entry in the database
+import { db } from "@/utils/dbConnection";
+
+export default async function RollercoasterIdPage({ params }) {
+  const rollercoasterId = await params.rollercoasterId;
+
+  //query the database
+  const query = await db.query(
+    `SELECT id, name, height, country, url FROM rollercoasters WHERE id = ${rollercoasterId}`
+  );
+  //   console.log(query);
+  //wrangle data
+  const rollercoaster = query.rows[0];
+  console.log(rollercoaster);
+  return (
+    <div>
+      <h2>{rollercoaster.name}</h2>
+      <h3>Height: {rollercoaster.height}m</h3>
+      <h3>Country: {rollercoaster.country}</h3>
+    </div>
+  );
+}
+
+
+//STATIC PAGE
+
+//TODO: render the rollercoasters data from the database
+import { db } from "@/utils/dbConnection";
+import Link from "next/link";
+
+export default async function RollercoastersPage() {
+  //query the database --> GET all the data from the table
+  const query = await db.query(
+    `SELECT id, name, height, country, url FROM rollercoasters`
+  );
+  //   console.log(query);
+  //wrangle the data
+  const rollercoasters = query.rows;
+  //   console.log(rollercoasters);
+  return (
+    <div>
+      {rollercoasters.map((rollercoaster) => {
+        return (
+          <div key={rollercoaster.id}>
+            <Link href={`/rollercoasters/${rollercoaster.id}`}>
+              {rollercoaster.name}
+            </Link>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+//FORMS SERVER FUNCTION DEMO
+//new rollercoaster
+//TODO: set up a form to create new data in the rollercoasters table
+// - submit action --> server function
+// - store the form values
+// - insert the values in the database
+// - extras (UX) --> refreshes the cache and redirect the user to the rollercoasters page
+
+import { db } from "@/utils/dbConnection";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+
+export default function NewRollercoasterPage() {
+  //handle the submit
+  //server function --> async, and "use server"
+
+  async function handleSubmit(formData) {
+    //remember this directive!!!!!!
+    //we want this function to be executed in the server
+    "use server";
+    console.log(formData);
+    //store the form data
+    const formValues = {
+      name: formData.get("name"),
+      height: formData.get("height"),
+      country: formData.get("country"),
+      url: formData.get("url"),
+    };
+    console.log(formValues);
+    //insert the data into the database
+    db.query(
+      `INSERT INTO rollercoasters (name, height, country, url) VALUES($1, $2, $3, $4)`,
+      [formValues.name, formValues.height, formValues.country, formValues.url]
+    );
+
+    //refresh the cache
+    revalidatePath("/rollercoasters");
+
+    //redirect the user to the rollercoasters page
+    redirect("rollercoasters");
+  }
+
+  return (
+    <>
+      <h1>Add a new rollercoaster!</h1>
+      <form action={handleSubmit}>
+        <fieldset>
+          <legend>Rollercoaster Info</legend>
+          <label htmlFor="name">Rollercoaster name: </label>
+          <input type="text" name="name" required />
+          <label htmlFor="height">Height: </label>
+          <input type="number" name="height" required min={0} max={1000} />
+          <label htmlFor="country">Country: </label>
+          <input type="text" name="country" required />
+          <label htmlFor="url">Image link: </label>
+          <input
+            type="text"
+            name="url"
+            required
+            placeholder="Add a link to the rollercoaster's image"
+          />
+        </fieldset>
+        <button type="submit">Submit</button>
+      </form>
+    </>
+  );
+}
