@@ -1,6 +1,6 @@
 //FORMS SERVER FUNCTION DEMO
 //new rollercoaster
-//TODO: set up a form to create new data in the rollercoasters table
+//TODO: set up a form to create new data in the books table
 // - submit action --> server function
 // - store the form values
 // - insert the values in the database
@@ -10,7 +10,7 @@ import { db } from "@/utils/dbConnection";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
-export default function NewRollercoasterPage() {
+export default function addBook() {
   //handle the submit
   //server function --> async, and "use server"
 
@@ -21,43 +21,41 @@ export default function NewRollercoasterPage() {
     console.log(formData);
     //store the form data
     const formValues = {
-      name: formData.get("name"),
-      height: formData.get("height"),
-      country: formData.get("country"),
-      url: formData.get("url"),
+      title: formData.get("title"),
+      author: formData.get("author"),
+      blurb: formData.get("blurb"),
     };
     console.log(formValues);
     //insert the data into the database
-    db.query(
-      `INSERT INTO rollercoasters (name, height, country, url) VALUES($1, $2, $3, $4)`,
-      [formValues.name, formValues.height, formValues.country, formValues.url]
-    );
+    db.query(`INSERT INTO books (title, author, blurb) VALUES($1, $2, $3)`, [
+      formValues.title,
+      formValues.author,
+      formValues.blurb,
+    ]);
 
     //refresh the cache
-    revalidatePath("/rollercoasters");
+    revalidatePath("/addbook");
 
     //redirect the user to the rollercoasters page
-    redirect("rollercoasters");
+    redirect("books");
   }
 
   return (
     <>
-      <h1>Add a new rollercoaster!</h1>
+      <h1>Add a new book!</h1>
       <form action={handleSubmit}>
         <fieldset>
-          <legend>Rollercoaster Info</legend>
-          <label htmlFor="name">Rollercoaster name: </label>
-          <input type="text" name="name" required />
-          <label htmlFor="height">Height: </label>
-          <input type="number" name="height" required min={0} max={1000} />
-          <label htmlFor="country">Country: </label>
-          <input type="text" name="country" required />
-          <label htmlFor="url">Image link: </label>
+          <legend>Book Information</legend>
+          <label htmlFor="title">Book name: </label>
+          <input type="text" name="title" required />
+          <label htmlFor="author">Author: </label>
+          <input type="text" name="author" required />
+          <label htmlFor="blurb">Book Blurb: </label>
           <input
             type="text"
-            name="url"
+            name="blurb"
             required
-            placeholder="Add a link to the rollercoaster's image"
+            placeholder="What is this book about?"
           />
         </fieldset>
         <button type="submit">Submit</button>

@@ -1,4 +1,4 @@
-//TODO: get the individual post data from the database
+//TODO: get the individual book data from the database
 //TODO: implement a delete action to delete comments
 
 // export default function PostIdPage() {
@@ -26,30 +26,27 @@
 } */
 }
 
-const query = await db.query(`SELECT id, title, author, blurb FROM books`);
-console.log(query);
-
 //DYNAMIC PAGE
 //TODO: render dynamically each rollercoaster entry in the database
 import { db } from "@/utils/dbConnection";
-import Form from "@/components/Form";
+import Form from "@/components/Form.jsx";
 
 export default async function reviewsIdPage({ params }) {
   const bookId = await params.books_id;
   console.log;
   //query the database
   const query = await db.query(
-    `SELECT id, name, height, country, url FROM rollercoasters WHERE id = ${bookId}`
+    `SELECT id, title, author, blurb, FROM books WHERE id = ${bookId}`
   );
   //   console.log(query);
   //wrangle data
-  const rollercoaster = query.rows[0];
-  console.log(rollercoaster);
+  const book = query.rows[0];
+  console.log(books);
   return (
     <div>
-      <h2>{rollercoaster.name}</h2>
-      <h3>Height: {rollercoaster.height}m</h3>
-      <h3>Country: {rollercoaster.country}</h3>
+      <h2>{book.title}</h2>
+      <h3>Author: {book.author}m</h3>
+      <h3>Blurb: {book.blurb}</h3>
     </div>
   );
 }
