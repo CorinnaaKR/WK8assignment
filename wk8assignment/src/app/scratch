@@ -104,11 +104,11 @@ export default async function RollercoastersPage() {
   //   console.log(rollercoasters);
   return (
     <div>
-      {rollercoasters.map((rollercoaster) => {
+      {books.map((book) => {
         return (
-          <div key={rollercoaster.id}>
-            <Link href={`/rollercoasters/${rollercoaster.id}`}>
-              {rollercoaster.name}
+          <div key={book.id}>
+            <Link href={`/reviews/${book.id}`}>
+              {book.name}
             </Link>
           </div>
         );

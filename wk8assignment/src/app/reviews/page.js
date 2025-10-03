@@ -1,7 +1,4 @@
-//TODO: render a list of posts
-//TODO: set up a sorting filter (searchParams)
-
-export default function PostsPage() {
+export default function reviewPage() {
   return (
     <div>
       The posts page
