@@ -35,7 +35,7 @@ export default async function reviewIdPage({ params }) {
   const bookId = await params.bookId;
   // query the database safely
   const query = db.query(
-    "SELECT id, title author, blurb WHERE id = ${book.id}"
+    "SELECT id, title, author, blurb FROM books WHERE id = ${book_id}"
   );
 
   // const reviewId = await response.json();
