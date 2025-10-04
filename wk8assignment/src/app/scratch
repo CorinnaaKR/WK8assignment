@@ -106,8 +106,8 @@ export default async function RollercoastersPage() {
     <div>
       {books.map((book) => {
         return (
-          <div key={book.id}>
-            <Link href={`/reviews/${book.id}`}>
+          <div key={rollercoaster.id}>
+            <Link href={`/reviews/${books.id}`}>
               {book.name}
             </Link>
           </div>

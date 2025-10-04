@@ -11,32 +11,27 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 export default function addBook() {
-  //handle the submit
-  //server function --> async, and "use server"
-
   async function handleSubmit(formData) {
-    //remember this directive!!!!!!
-    //we want this function to be executed in the server
     "use server";
+
     console.log(formData);
-    //store the form data
+
     const formValues = {
       title: formData.get("title"),
       author: formData.get("author"),
       blurb: formData.get("blurb"),
     };
+
     console.log(formValues);
-    //insert the data into the database
+
     db.query(`INSERT INTO books (title, author, blurb) VALUES($1, $2, $3)`, [
       formValues.title,
       formValues.author,
       formValues.blurb,
     ]);
 
-    //refresh the cache
     revalidatePath("/addbook");
 
-    //redirect the user to the rollercoasters page
     redirect("books");
   }
 

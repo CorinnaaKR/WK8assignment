@@ -1,4 +1,4 @@
-//TODO: render the rollercoasters data from the database
+//TODO: render the books data from the database
 import { db } from "@/utils/dbConnection";
 import Link from "next/link";
 
@@ -8,7 +8,7 @@ export default async function BooksPage() {
   console.log(query);
   //wrangle the data
   const books = query.rows;
-  //   console.log(rollercoasters);
+  //   console.log(books);
   return (
     <div>
       {/* ADD IN THE TITLE AND INFOR TO MAKE THE PAGE DIRECTIVE FOR THE USER */}
