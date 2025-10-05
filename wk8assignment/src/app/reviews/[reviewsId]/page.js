@@ -32,15 +32,16 @@ import { db } from "@/utils/dbConnection";
 import Form from "@/components/Form.jsx";
 
 export default async function reviewIdPage({ params }) {
-  const bookId = await params.bookId;
+  const myParams = await params;
+  const reviewsId = myParams.reviewsId;
   // query the database safely
-  const query = db.query(
-    "SELECT id, title, author, blurb FROM books WHERE id = ${book_id}"
+  const queryResponse = await db.query(
+    `SELECT books.id, books.title, books.author, books.blurb FROM books WHERE books.id = $1`,
+    [reviewsId]
   );
-
   // const reviewId = await response.json();
 
-  const book = query.rows; // one book
+  const book = queryResponse.rows[0]; // one book
   console.log(book);
   if (!book) {
     return <h2>Book not found</h2>;
@@ -53,7 +54,7 @@ export default async function reviewIdPage({ params }) {
       <h3>Blurb: {book.blurb}</h3>
 
       {/* review form */}
-      <Form bookId={book.id} />
+      <Form />
     </div>
   );
 }
