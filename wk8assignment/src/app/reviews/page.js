@@ -1,38 +1,36 @@
 import Form from "./components/Form.jsx";
+import { db } from "@/utils/utilities.js";
 
-export default function reviewPage() {
+export default function NewReviewPage() {
+  async function handleSavePost(formData) {
+    "use server"; // makes this function run _on the server_, as if by magic API.
+    console.log("Saving post to the database...");
+
+    // get the form data from the formData object next provides
+    const username = formData.get("username");
+    const review = formData.get("review");
+
+    // insert the data into postgres
+    await db.query(`INSERT INTO review (username, review) VALUES ($1, $2)`, [
+      username,
+      review,
+    ]);
+    console.log("Review submitted!");
+
+    // revalidate the review page, so it fetches the new data
+    revalidatePath("/reviews");
+
+    // redirect the user to the review page
+    redirect("/reviews");
+  }
+
   return (
-    <div>
-      The posts page
-      {/* TODO: render the list of books
-       */}
-    </div>
+    <form action={handleSubmitReview}>
+      <label htmlFor="username">Username: </label>
+      <input id="username" name="username" type="text" />
+      <label htmlFor="review">Review: </label>
+      <textarea id="review" name="review" />
+      <button type="submit">Submit Review</button>
+    </form>
   );
 }
-
-// import { db } from "@/utils/dbConnection";
-// import Link from "next/link";
-
-// export default async function BooksPage() {
-//   //query the database --> GET all the data from the table
-//   const query = await db.query(
-//     `SELECT id, name, height, country, url FROM rollercoasters`
-//   );
-//   //   console.log(query);
-//   //wrangle the data
-//   const rollercoasters = query.rows;
-//   //   console.log(rollercoasters);
-//   return (
-//     <div>
-//       {rollercoasters.map((rollercoaster) => {
-//         return (
-//           <div key={rollercoaster.id}>
-//             <Link href={`/rollercoasters/${rollercoaster.id}`}>
-//               {rollercoaster.name}
-//             </Link>
-//           </div>
-//         );
-//       })}
-//     </div>
-//   );
-// }

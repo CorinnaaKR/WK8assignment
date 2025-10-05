@@ -40,7 +40,7 @@ export default function addBook() {
       <h1>Add a new book!</h1>
       <form action={handleSubmit}>
         <fieldset>
-          <legend>Book Information</legend>
+          <legend>What book would you like to add for review?</legend>
           <label htmlFor="title">Book name: </label>
           <input type="text" name="title" required />
           <label htmlFor="author">Author: </label>
